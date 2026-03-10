@@ -12,13 +12,34 @@ apply from: "../../node_modules/@code-push-next/react-native-code-push/android/c
 
 ## 2) Update MainApplication
 
-For React Native `0.76+`, update `android/app/src/main/java/.../MainApplication.kt` to override bundle resolution:
+For React Native `0.76 to 0.81`, update `android/app/src/main/java/.../MainApplication.kt` to override bundle resolution:
 
 ```kotlin
 import com.microsoft.codepush.react.CodePush
 
 override fun getJSBundleFile(): String {
   return CodePush.getJSBundleFile()
+}
+```
+
+For React Native `0.82 and above`: update the `MainApplication.kt` as follows:
+
+```kotlin
+
+import com.microsoft.codepush.react.CodePush
+
+class MainApplication : Application(), ReactApplication {
+
+    override val reactHost: ReactHost by lazy {
+        getDefaultReactHost(
+        context = applicationContext,
+        packageList =
+            PackageList(this).packages.apply {
+              ...
+            },
+        jsBundleFilePath = CodePush.getJSBundleFile(),
+        )
+    }
 }
 ```
 
