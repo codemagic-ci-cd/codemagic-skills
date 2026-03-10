@@ -4,7 +4,7 @@ A collection of AI agent skills focused on Codemagic tasks. Works with Claude Co
 
 # What are Skills?
 
-Skills are markdown files that give AI agents specialized knowledge and workflows for specific tasks. When you add these to your project, your agent can recognize when you're working on a marketing task and apply the right frameworks and best practices.
+Skills are markdown files that give AI agents specialized knowledge and workflows for specific tasks.
 
 
 ## Available Skills
