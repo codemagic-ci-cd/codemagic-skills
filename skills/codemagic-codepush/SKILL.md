@@ -54,7 +54,7 @@ Always set both server URL and deployment key in native config:
 
 ## Step 3: Configure Codemagic CI + CLI
 
-Follow [references/codemagic-ci-and-cli.md](references/codemagic-ci-and-cli.md) and ensure:
+Follow [references/codepush-releases-codemagic-ci.md](references/codepush-releases-codemagic-ci.md) and [references/codepush-cli.md](references/codepush-cli.md) to ensure:
 
 1. `@codemagic/code-push-cli` is installed in workflow scripts.
 2. Login uses Codemagic server URL and token from environment variables.
