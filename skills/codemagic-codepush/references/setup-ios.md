@@ -63,7 +63,13 @@ Optional for code signing verification:
 -----END PUBLIC KEY-----</string>
 ```
 
-## 4) Binary version caveat
+## 4) Check minimum supported iOS version in Podfile
+
+Check the `ios/Podfile` for minimum supported ios version is `15.5` or higher.
+
+`platform :ios, '15.5'`
+
+## 5) Binary version caveat
 
 If release fails due to iOS semver parsing, set `CFBundleShortVersionString` to a valid semver or pass:
 
