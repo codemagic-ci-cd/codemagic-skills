@@ -58,3 +58,5 @@ Rollback:
 code-push rollback MyApp-iOS Production
 code-push rollback MyApp-Android Production
 ```
+
+Add `--targetBinaryVersion` explicitly when auto-detection does not match your build metadata.

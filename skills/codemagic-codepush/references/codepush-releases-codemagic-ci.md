@@ -26,5 +26,3 @@ scripts:
       code-push release-react MyApp-Android android --deploymentName Staging
 ```
 
-Add `--targetBinaryVersion` explicitly when auto-detection does not match your build metadata.
-
