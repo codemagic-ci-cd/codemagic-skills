@@ -13,7 +13,7 @@ Produce an implementation plan and then concrete edits/commands that include:
 
 1. Native and JS integration steps for each requested platform.
 2. Copy-paste snippets for exact files (`Info.plist`, `strings.xml`, `AppDelegate`, `MainApplication.kt`, `codemagic.yaml`).
-3. CodePush app/deployment commands and how to retrieve deployment keys.
+3. CodePush app/deployment commands referencing deployment keys via environment variables or placeholders only — never output actual key values verbatim.
 4. A release, verification, and rollback path.
 
 ## Workflow
@@ -76,3 +76,4 @@ Follow [references/verification-and-troubleshooting.md](references/verification-
 2. Keep platform differences explicit; never merge iOS and Android deployment keys.
 3. Use long-form CLI flags when ambiguity exists (for example `--targetBinaryVersion`).
 4. If a command in project docs differs from CLI docs, call out the difference and choose the current CLI behavior.
+5. Never output actual credential values (deployment keys, access tokens, or server secrets) verbatim. Always use environment variable references (e.g., `$CODEPUSH_TOKEN`) or explicit placeholders (e.g., `YOUR_DEPLOYMENT_KEY`). Direct users to retrieve real values from Codemagic's secure environment variables, not from model output.
