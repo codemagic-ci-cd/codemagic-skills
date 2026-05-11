@@ -1,6 +1,9 @@
 ---
 name: codemagic-codepush
 description: Configure and operate Codemagic-hosted CodePush for React Native iOS and Android apps, including native plugin wiring, deployment key/server URL setup, Codemagic CI integration, and OTA release lifecycle (release, promote, patch, rollback). Use when requests mention CodePush, codepush, OTA updates, @code-push-next/react-native-code-push, @codemagic/code-push-cli, codepush.pro, deployment keys, or staged iOS/Android rollout workflows.
+metadata:
+  author: Codemagic
+  version: "1.0.0"
 ---
 
 # Codemagic CodePush Setup
