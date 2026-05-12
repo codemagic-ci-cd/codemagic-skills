@@ -10,6 +10,21 @@ metadata:
 
 Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (`https://codepush.pro`) across iOS and Android.
 
+## Official documentation (Codemagic)
+
+Use these as the maintained source of truth (read the relevant page when the task touches that area):
+
+- [Concepts](https://docs.codemagic.io/rn-codepush/concepts/) — JS vs native, delta updates, SDK-in-binary prerequisite.
+- [Setup](https://docs.codemagic.io/rn-codepush/setup/) — CLI login, first `release-react`, RN integration overview.
+- [Releasing updates](https://docs.codemagic.io/rn-codepush/releasing-updates/) — Staging → promote, `targetBinaryVersion`, semver.
+- [Production control](https://docs.codemagic.io/rn-codepush/production-control/) — Rollouts, mandatory, rollback, mandatory propagation.
+- [Security and access](https://docs.codemagic.io/rn-codepush/security-and-access/) — Access keys, package signing.
+- [CI integration](https://docs.codemagic.io/rn-codepush/ci-integration/) — Codemagic/GitHub Actions release patterns.
+- [Issues and debugging](https://docs.codemagic.io/rn-codepush/debugging-and-common-issues/) — `code-push debug`, logs, `notifyAppReady`, source maps.
+- [CodePush analytics](https://docs.codemagic.io/rn-codepush/codepush-analytics/) — Dashboard and CLI metrics (path is `codepush-analytics`, not `analytics`).
+- [CLI quick reference](https://docs.codemagic.io/rn-codepush/cli-quick-reference/) — Common `code-push` flags.
+- [Advanced: sync options](https://docs.codemagic.io/rn-codepush/advanced-sync-options/) — Client UX, `sync()`, install modes, dialogs, progress, restarts.
+
 ## Expected Output
 
 Produce an implementation plan and then concrete edits/commands that include:
