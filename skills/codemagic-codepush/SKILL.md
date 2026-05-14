@@ -40,7 +40,7 @@ Produce an implementation plan and then concrete edits/commands that include:
 2. Configure React Native client integration (JS + native).
 3. Configure Codemagic CI and CodePush CLI auth.
 4. Create platform apps/deployments and wire deployment keys.
-5. Release to `Staging`, verify, then promote to `Production`.
+5. Validate OTA on `Staging`, ship a store binary that includes CodePush for production users, then promote OTA from `Staging` to `Production` (see Step 4).
 6. Troubleshoot or rollback if verification fails.
 
 ## Step 1: Confirm Scope And Prerequisites
@@ -84,9 +84,12 @@ Use [https://github.com/codemagic-ci-cd/code-push-pro](https://github.com/codema
 
 Follow [references/verification-and-troubleshooting.md](references/verification-and-troubleshooting.md):
 
-1. Release to `Staging` first.
-2. Validate update delivery and metrics.
-3. Promote from `Staging` to `Production` only after validation.
+1. Build and install a native binary that includes the CodePush SDK and your **Staging** deployment key (internal / QA build is enough to exercise OTA).
+2. Release an OTA update to **Staging** and confirm the device picks it up.
+3. Validate behavior and metrics on **Staging** before any Production promotion.
+4. **Optional:** Tune install/check timing or dialogs for how users use the app ([Advanced: sync options](https://docs.codemagic.io/rn-codepush/advanced-sync-options/)), then test in staging again.
+5. Ship a **store** release (App Store / Google Play) so production users run a binary that already contains CodePush; wait until installs matter for your rollout.
+6. Promote the tested OTA from **Staging** to **Production** in CodePush so eligible store binaries receive the JS update.
 
 ## Execution Rules
 
