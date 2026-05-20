@@ -1,6 +1,8 @@
 # Codemagic CodePush CLI
 
-Common CodePush CLI commands for loging to CodePush server, creating apps on your CodePush account, and managing rollouts.
+Common CodePush CLI commands for logging in to the CodePush server, creating apps on your CodePush account, and managing rollouts.
+
+Use `code-push --help` and `code-push release-react --help` to check commands for current `@codemagic/code-push-cli` releases.
 
 ## 1) Install and authenticate CLI
 
