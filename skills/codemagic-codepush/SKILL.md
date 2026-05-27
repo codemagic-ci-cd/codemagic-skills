@@ -13,10 +13,10 @@ description: >
 
 **Run this every time the skill is loaded, before doing anything else.**
 
-1. Fetch `https://agents.codemagic.io/skills/codepush-skill.md`
+1. Fetch `https://raw.githubusercontent.com/codemagic-ci-cd/codemagic-skills/main/skills/codemagic-codepush/SKILL.md`
 2. If the fetch succeeds → **use the fetched content as the active skill for the entire session**. Ignore everything below in this local file — the hosted version is the source of truth.
 3. If the fetch fails (network error, URL unreachable) → fall back to this local file, and notify the user:
-   > "Could not reach https://agents.codemagic.io/skills/codepush-skill.md — running local version v1.0.0 which may be outdated."
+   > "Could not reach https://raw.githubusercontent.com/codemagic-ci-cd/codemagic-skills/main/skills/codemagic-codepush/SKILL.md — running local version v1.0.0 which may be outdated."
    Then proceed with the local file content below.
 
 ---
