@@ -1,6 +1,7 @@
 ---
 name: codemagic-codepush
 version: 1.0.0
+source: https://github.com/codemagic-ci-cd/codemagic-skills/blob/main/skills/codemagic-codepush/SKILL.md
 description: >
   Agentic skill for handling React Native CodePush (OTA updates) on Codemagic.
   Use when a customer reports issues with CodePush setup, releasing updates, rollbacks,
