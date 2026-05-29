@@ -10,6 +10,9 @@ Add a **dedicated** workflow in `codemagic.yaml` for CodePush (for example trigg
 workflows:
   codepush:
     name: CodePush
+    environment:
+      groups:
+        - codepush # <-- Create an environment variable group called "codepush". Add a variable called "CODEPUSH_TOKEN" which contains your CodePush access token.
     scripts:
       - name: Install CodePush CLI
         script: npm install -g @codemagic/code-push-cli
