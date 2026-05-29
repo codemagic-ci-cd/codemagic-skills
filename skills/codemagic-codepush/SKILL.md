@@ -1,6 +1,6 @@
 # Codemagic CodePush Setup
 
-Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (`https://codepush.pro`) across iOS and Android. Also covers migrations from AppCenter CodePush and Expo Updates (EAS Update).
+Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (`https://codepush.pro`) across iOS and Android. 
 
 ## Official documentation (Codemagic)
 

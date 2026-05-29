@@ -19,6 +19,27 @@ code-push promote MyApp-Android Staging Production
 | `--mandatory` | Force install — users cannot skip |
 | `--rollout <n>` | Gradual rollout to n% of users |
 | `--description` | Release notes shown in update dialog |
+| `--disabled` / `-x` | Release exists but is unavailable to users until explicitly enabled via `patch` |
+| `--noDuplicateReleaseError` | Warn instead of error when releasing an identical bundle — useful in CI to avoid failing on no-op releases |
+| `--privateKeyPath` | Path to code signing private key — required when update signing is enabled |
+| `--development` | Build bundle in development mode (default: `false`) |
+| `--sourcemapOutput` | Output path for the generated source map file |
+| `--outputDir` | Custom temporary directory for bundled output |
+| **Bundle entry** | |
+| `--bundleName` | Custom name for the generated bundle file (inferred by default) |
+| `--entryFile` | JavaScript entry point (default: platform-dependent, e.g. `index.ios.js`) |
+| **Android** | |
+| `--gradleFile` | Path to `build.gradle` (auto-detected by default) |
+| **iOS** | |
+| `--plistFile` | Path to `Info.plist` (auto-detected by default) |
+| `--plistFilePrefix` | Prefix used when searching for the plist file |
+| `--podFile` | Path to `Podfile` (auto-detected by default) |
+| `--xcodeProjectFile` | Path to `.xcodeproj` file (auto-detected by default) |
+| `--xcodeTargetName` | Xcode build target name (auto-detected by default) |
+| `--buildConfigurationName` | Xcode build configuration name (auto-detected by default) |
+| **Hermes** | |
+| `--useHermes` | Enable Hermes engine for bundle compilation (platform-dependent default) |
+| `--extraHermesFlags` | Additional flags passed to the Hermes compiler |
 
 ---
 
