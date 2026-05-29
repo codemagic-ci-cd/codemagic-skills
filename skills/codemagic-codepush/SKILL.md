@@ -1,29 +1,21 @@
----
-name: codemagic-codepush
-description: Configure and operate Codemagic-hosted CodePush for React Native iOS and Android apps, including native plugin wiring, deployment key/server URL setup, Codemagic CI integration, and OTA release lifecycle (release, promote, patch, rollback). Use when requests mention CodePush, codepush, OTA updates, @code-push-next/react-native-code-push, @codemagic/code-push-cli, codepush.pro, deployment keys, or staged iOS/Android rollout workflows.
-metadata:
-  author: Codemagic
-  version: "1.0.0"
----
-
 # Codemagic CodePush Setup
 
-Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (`https://codepush.pro`) across iOS and Android.
+Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (`https://codepush.pro`) across iOS and Android. 
 
 ## Official documentation (Codemagic)
 
 Use these as the maintained source of truth (read the relevant page when the task touches that area):
 
-- [Concepts](https://docs.codemagic.io/rn-codepush/concepts/) — JS vs native, delta updates, SDK-in-binary prerequisite.
-- [Setup](https://docs.codemagic.io/rn-codepush/setup/) — CLI login, first `release-react`, RN integration overview.
-- [Releasing updates](https://docs.codemagic.io/rn-codepush/releasing-updates/) — Staging → promote, `targetBinaryVersion`, semver.
-- [Production control](https://docs.codemagic.io/rn-codepush/production-control/) — Rollouts, mandatory, rollback, mandatory propagation.
-- [Security and access](https://docs.codemagic.io/rn-codepush/security-and-access/) — Access keys, package signing.
-- [CI integration](https://docs.codemagic.io/rn-codepush/ci-integration/) — Codemagic/GitHub Actions release patterns.
-- [Issues and debugging](https://docs.codemagic.io/rn-codepush/debugging-and-common-issues/) — `code-push debug`, logs, `notifyAppReady`, source maps.
-- [CodePush analytics](https://docs.codemagic.io/rn-codepush/codepush-analytics/) — Dashboard and CLI metrics (path is `codepush-analytics`, not `analytics`).
-- [CLI quick reference](https://docs.codemagic.io/rn-codepush/cli-quick-reference/) — Common `code-push` flags.
-- [Advanced: sync options](https://docs.codemagic.io/rn-codepush/advanced-sync-options/) — Client UX, `sync()`, install modes, dialogs, progress, restarts.
+- [Concepts](https://docs.codemagic.io/rn-codepush/concepts/) — "JS vs native, delta updates, SDK-in-binary prerequisite"
+- [Setup](https://docs.codemagic.io/rn-codepush/setup/) — "CLI login, first `release-react`, RN integration overview"
+- [Releasing updates](https://docs.codemagic.io/rn-codepush/releasing-updates/) — "Staging → promote, `targetBinaryVersion`, semver"
+- [Production control](https://docs.codemagic.io/rn-codepush/production-control/) — "Rollouts, mandatory, rollback, mandatory propagation"
+- [Security and access](https://docs.codemagic.io/rn-codepush/security-and-access/) — "Access keys, package signing"
+- [CI integration](https://docs.codemagic.io/rn-codepush/ci-integration/) — "Codemagic/GitHub Actions release patterns"
+- [Issues and debugging](https://docs.codemagic.io/rn-codepush/debugging-and-common-issues/) — "`code-push debug`, logs, `notifyAppReady`, source maps"
+- [CodePush analytics](https://docs.codemagic.io/rn-codepush/codepush-analytics/) — "Dashboard and CLI metrics (path is `codepush-analytics`, not `analytics`)"
+- [CLI quick reference](https://docs.codemagic.io/rn-codepush/cli-quick-reference/) — "Common `code-push` flags"
+- [Advanced: sync options](https://docs.codemagic.io/rn-codepush/advanced-sync-options/) — "Client UX, `sync()`, install modes, dialogs, progress, restarts"
 
 ## Expected Output
 
@@ -48,7 +40,7 @@ Produce an implementation plan and then concrete edits/commands that include:
 Do the following first:
 
 1. Confirm the project is React Native (pure Expo managed workflow is not supported by the plugin setup).
-2. Confirm Codemagic has provisioned a CodePush access token for the team.
+2. Confirm Codemagic has provisioned a CodePush access token for the team (self-service: **OTA Updates → Manage Access Keys → Generate key**).
 3. Confirm whether the user wants setup for both platforms or only one.
 4. Use separate CodePush app names per platform (for example `MyApp-iOS`, `MyApp-Android`).
 
@@ -98,3 +90,20 @@ Follow [references/verification-and-troubleshooting.md](references/verification-
 3. Use long-form CLI flags when ambiguity exists (for example `--targetBinaryVersion`).
 4. If a command in project docs differs from CLI docs, call out the difference and choose the current CLI behavior.
 5. Never output actual credential values (deployment keys, access tokens, or server secrets) verbatim. Always use environment variable references (e.g., `$CODEPUSH_TOKEN`) or explicit placeholders (e.g., `YOUR_DEPLOYMENT_KEY`). Direct users to retrieve real values from Codemagic's secure environment variables, not from model output.
+6. Always ensure `notifyAppReady()` is called early in the app lifecycle — omitting it causes CodePush to treat the update as failed and silently roll back.
+7. CodePush delivers JS bundles and assets only — native code changes require a new store binary.
+
+## Reference Files
+
+| Topic | File |
+|---|---|
+| What CodePush is, core concepts, analytics | [codepush-core-concepts.md](references/codepush-core-concepts.md) |
+| JS SDK setup, root component wrap, notifyAppReady, sync options | [codepush-js-sdk.md](references/codepush-js-sdk.md) |
+| iOS native setup | [setup-ios.md](references/setup-ios.md) |
+| Android native setup | [setup-android.md](references/setup-android.md) |
+| CLI commands, auth, app/deployment management | [codepush-cli.md](references/codepush-cli.md) |
+| Releasing, promoting, rollouts, rollbacks | [codepush-releases.md](references/codepush-releases.md) |
+| CI integration with Codemagic YAML | [codepush-ci-integration.md](references/codepush-ci-integration.md) |
+| Access tokens, RSA signing | [codepush-security.md](references/codepush-security.md) |
+| Migrating from AppCenter or Expo Updates | [codepush-migrations.md](references/codepush-migrations.md) |
+| Debugging, error patterns, decision trees | [codepush-debugging.md](references/verification-and-troubleshooting.md) |
