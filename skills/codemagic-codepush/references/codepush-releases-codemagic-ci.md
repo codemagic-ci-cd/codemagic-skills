@@ -35,15 +35,21 @@ workflows:
 
       - name: Release iOS OTA to Staging
         script: |
+          IOS_VERSION=$(xcodebuild -showBuildSettings \
+           -project ios/PROJECT_NAME.xcodeproj \
+           -target PROJECT_TARGET \
+           | awk -F "= " '/MARKETING_VERSION/ {print $2; exit}')
           code-push release-react MyApp-iOS ios \
             --deploymentName Staging \
-            --targetBinaryVersion "~$(node -p "require('./package.json').version")"
+            --targetBinaryVersion "$IOS_VERSION"
 
       - name: Release Android OTA to Staging
         script: |
+          ANDROID_VERSION=$(grep versionName android/app/build.gradle | head -1 \
+           | sed 's/.*versionName "\(.*\)".*/\1/')
           code-push release-react MyApp-Android android \
             --deploymentName Staging \
-            --targetBinaryVersion "~$(node -p "require('./package.json').version")"
+            --targetBinaryVersion "$ANDROID_VERSION"
 ```
 
 ---
