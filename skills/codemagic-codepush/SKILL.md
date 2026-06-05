@@ -105,5 +105,4 @@ Follow [references/verification-and-troubleshooting.md](references/verification-
 | Releasing, promoting, rollouts, rollbacks | [codepush-releases.md](references/codepush-releases.md) |
 | CI integration with Codemagic YAML | [codepush-ci-integration.md](references/codepush-ci-integration.md) |
 | Access tokens, RSA signing | [codepush-security.md](references/codepush-security.md) |
-| Migrating from AppCenter or Expo Updates | [codepush-migrations.md](references/codepush-migrations.md) |
 | Debugging, error patterns, decision trees | [codepush-debugging.md](references/verification-and-troubleshooting.md) |
