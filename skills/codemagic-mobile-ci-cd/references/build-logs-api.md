@@ -4,9 +4,11 @@
 
 ## Authentication
 
-1. Get API token: Codemagic → Account settings → API token
-2. Pass in header: `x-auth-token: $CM_API_TOKEN`
-3. Never output or commit real tokens — use env var placeholders only
+**User:** Create an API token at [Codemagic settings](https://codemagic.io/settings) and make it available to the agent as `CM_API_TOKEN` (shell env var). Do not commit the token or paste it into yaml.
+
+**Agent:** Use `x-auth-token: $CM_API_TOKEN` in API requests. If no token is available, use [Fallbacks](#fallbacks) (UI logs first).
+
+Never echo, log, or commit real tokens.
 
 ## Workflow
 
