@@ -12,7 +12,9 @@ Skills are markdown files that give AI agents specialized knowledge and workflow
 | Skill | Description |
 |---|---|
 | [codemagic-codepush](https://github.com/codemagic-ci-cd/codemagic-skills/tree/main/skills/codemagic-codepush) | Use this skill to set up and configure Codemagic CodePush for your iOS and Android React Native apps |
-| [codemagic-ci-cd-onboarding](https://github.com/codemagic-ci-cd/codemagic-skills/tree/main/skills/codemagic-ci-cd-onboarding) | Guide a user from zero to the first successful mobile build (APK/IPA) with Codemagic for Flutter or React Native |
+| [codemagic-mobile-ci-cd](https://github.com/codemagic-ci-cd/codemagic-skills/tree/main/skills/codemagic-mobile-ci-cd) | End-to-end Codemagic CI/CD for Flutter, React Native, and native mobile apps — first build through signing, versioning, and store release |
+
+Previously `codemagic-ci-cd-onboarding` — renamed and expanded to cover the full release pipeline.
 
 # License
 
