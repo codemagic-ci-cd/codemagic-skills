@@ -1,3 +1,8 @@
+---
+name: codemagic-codepush
+description: Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (codepush.pro) across iOS and Android.
+---
+
 # Codemagic CodePush Setup
 
 Set up and maintain OTA update delivery for React Native apps through Codemagic-hosted CodePush (`https://codepush.pro`) across iOS and Android. 
