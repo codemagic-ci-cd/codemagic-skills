@@ -28,7 +28,7 @@ cmpatch-capacitor deployment list --app <Name>-Android --format json
 
 - Each new app gets `Staging` and `Production` deployments.
 - Apps created as React Native apps (for example with `cmpatch init`) do not show up here.
-- **Download base URL:** the server's exact `PUBLIC_BASE_URL`; do not derive it from the API URL. Take it from the installer's output or the deployment's SDK configuration panel in the dashboard. `cmpatch context --remote` (the React Native CLI, when signed in) also shows it.
+- **Download base URL:** the server's exact `PUBLIC_BASE_URL`; do not derive it from the API URL. Take it from the installer's output or the deployment's SDK configuration panel in the dashboard. `cmpatch-capacitor` has no command that prints it. `cmpatch context --remote` (the React Native CLI) does, but it needs its own `cmpatch login`, or `CODEMAGIC_PATCH_TOKEN` and a server URL.
 
 ## Publish a release
 
@@ -44,13 +44,15 @@ cmpatch-capacitor release inspect --app <Name>-iOS --deployment Staging --label 
 
 Repeat with the Android app and the installed Android version.
 
+- **Code signing:** when the app enforces it (`publicKey` in the config, or the app's `--require-code-signing` setting), add `--private-key-path <pem>`. Devices reject unsigned releases then.
 - **`--bundle-path`** is the `webDir` directory (or a ZIP of its contents) with `index.html` at its top level. The CLI checks this, and refuses a top-level `node_modules`, symlinks and over-long paths.
 - **`--target-binary-version`** is required and must equal the installed app's `CFBundleShortVersionString` / `versionName` exactly. Ranges are rejected, and a release cannot be retargeted later. See [Binary version compatibility](https://patch.codemagic.io/docs/using-patch/binary-version-capacitor.md).
 - Devices receive a release only after processing: wait for `inspect --wait` to report it as processed.
 - **Exit codes:**
-  - `2`: usage error, missing `--yes`, or not signed in;
-  - `3`: validation failed, or processing failed or timed out;
-  - `1`: server or runtime error.
+  - `2`: usage error (including a bundle the CLI refuses), missing `--yes`, or not signed in;
+  - `3`: an invalid `--target-binary-version`, processing failed or timed out, or the stored sign-in expired;
+  - `1`: server or runtime error, a declined prompt, or a failed doctor check;
+  - `4`: account disabled.
 
 ## Afterwards
 

@@ -8,13 +8,13 @@ Make these edits yourself, shaped by the workspace map. Each section names the r
 npm view @codemagic/capacitor-patch version peerDependencies
 ```
 
-It supports Capacitor 7 and 8 and is a 0.x release, so check the docs for changes. Install it where the app's dependencies live:
+Its npm peer range (`@capacitor/core >=7`) has no upper bound, but the native packages accept Capacitor 7 and 8 only. It is a 0.x release, so check the docs for changes. Install it where the app's dependencies live:
 
 | Layout | Command |
 | --- | --- |
 | single app | `npm install @codemagic/capacitor-patch` (or the repo's manager) in the app root |
 | npm / Yarn / pnpm workspaces | `npm install @codemagic/capacitor-patch -w <app workspace>`, `yarn workspace <app> add …`, `pnpm --filter <app> add …` |
-| Nx integrated repo (one root `package.json`) | install at the root |
+| Nx integrated repo (one root `package.json`) | install at the root. If the app folder has its own `package.json` (the @nxext layout), add the plugin there too: `cap sync` reads the root's dependencies only when the app folder has none |
 
 Then run `npx cap sync` from the app root, the directory with `capacitor.config.*`. It links the plugin into both native projects: Podfile or `CapApp-SPM` on iOS, the Gradle module list on Android. You do not need `pod install` or AppDelegate / `MainActivity` edits.
 
@@ -42,7 +42,7 @@ plugins: {
 - Merge into an existing `plugins` object; do not replace other plugins' settings.
 - iOS and Android must use different deployment keys. A shared key makes the platforms overwrite each other's releases.
 - `publicKey` only when the user enforces code signing. In a TypeScript or JSON string, `\n` line breaks are fine. In an `Info.plist` override, use real line breaks: a literal `\n` there breaks the key on iOS.
-- **Per build (Staging and Production, flavors, schemes):** either read the keys from environment variables in `capacitor.config.ts` (resolved when `cap sync` runs), or leave the config on Staging and set `CodemagicPatchDeploymentKey` as a native override in the scheme's `Info.plist` / build setting or the flavor's `strings.xml`. Overrides win key by key, so look for existing ones first.
+- **Per build (Staging and Production, flavors, schemes):** either read the keys from environment variables in `capacitor.config.ts` (resolved when `cap sync` runs), or leave the config on Staging and override the key natively: on iOS, set `CodemagicPatchDeploymentKey` to `$(PATCH_DEPLOYMENT_KEY)` in `Info.plist` and define that build setting per build configuration (a scheme only picks the configuration); on Android, in the flavor's `strings.xml`. Overrides win key by key, so look for existing ones first.
 
 ## 3. Sync and check what the binary will carry
 
@@ -89,7 +89,7 @@ For release builds:
 - **Another live-update plugin.** Remove it, its config block, and its calls, after agreeing the cut-over with the user. Devices keep the old system until they install the new binary.
 - **`DisableDeploy`** in `config.xml` or Cordova preferences: remove it. It turns off Android's persisted-path boot.
 - **Calls to `setServerBasePath` / `persistServerBasePath`** in app code: remove them, or ask why they exist.
-- **Custom native shells.** A `CAPBridgeViewController` subclass that changes the path in `capacitorDidLoad()`, or an Android `Bridge.Builder.setServerPath()`, overrides Patch. Remove the override, or ask the user what it is for.
+- **Custom native shells.** A `CAPBridgeViewController` subclass that changes the path in `capacitorDidLoad()`, or an Android `Bridge.Builder.setServerPath()`, overrides Patch. Remove the override, or ask the user what it is for. A shell that registers plugins by hand must register `CodemagicPatch` too, before the WebView first loads, so the plugin's `load()` can choose the bundle.
 
 ## 6. Native requirements
 
@@ -111,7 +111,7 @@ Releases target the installed app's version exactly:
 - iOS: `CFBundleShortVersionString`, usually `MARKETING_VERSION`;
 - Android: `versionName`.
 
-The CLI does not detect it, so read it from the project, or from the build the user installed. Each release of native changes needs a new version, because a release cannot be retargeted later.
+`release create` never detects it. Read it from the project (`cmpatch-capacitor doctor --platform <p> --format json` reports a literal `MARKETING_VERSION` / `versionName`, including a `versionNameSuffix`), and confirm it against the build the user installed. Each release of native changes needs a new version, because a release cannot be retargeted later.
 
 ## 9. Staging and Production binaries
 

@@ -18,12 +18,12 @@ Doctor reads the project, the synced configs, the server and the published files
 - missing or mismatched values, and native overrides;
 - a shared key;
 - a stale or missing synced config, and a missing plugin registration;
-- web sources that never call `start()`;
+- web sources with no `start`, `sync` or `notifyAppReady` call. It scans under the project root, skips `www`, `dist` and `build`, and does not follow wrapper modules. Finding none is reported as unresolved, not as a failure, so a call in an Nx `libs/` folder outside the app root is invisible to it;
 - an unbuilt `webDir`.
 
 It cannot see the installed build, and it exits `1` when a check fails. Values that only the build decides (a Gradle `resValue`, a flavor, an `Info.plist` `$(SETTING)`) are reported as unresolved. Pass `--platform`, `--app` and `--deployment` to check them against a deployment.
 
-When `sync()` only says `"error"`, call the step APIs (`checkForUpdate`, `downloadUpdate`) once from a debug screen or the console. They throw `CodemagicPatchError` with a `code`.
+When `sync()` only says `"error"`, first read what devices reported: `cmpatch-capacitor release failures --app <app> --deployment Staging --label <label> --reason <reason>` (the reasons are in `release metrics --format json`), then `release failure-events`. On a debuggable build, the step APIs (`checkForUpdate`, `downloadUpdate`) throw `CodemagicPatchError` with a `code`; release builds expose the WebView console only with `webContentsDebuggingEnabled`.
 
 ## Symptoms
 
@@ -40,11 +40,12 @@ When `sync()` only says `"error"`, call the step APIs (`checkForUpdate`, `downlo
 | Old files keep showing after an update | A service worker serves its cache | Turn it off in native builds |
 | One launch shows the embedded bundle after installing a build with only a new `versionCode` (Android) | Capacitor ignores its persisted path on the first launch of a new binary | Relaunch. Bump `versionName` for native releases |
 | Signed releases are rejected on iOS only | The `Info.plist` public-key override contains a literal `\n` | Use real line breaks, or set `publicKey` in the config |
-| Android build fails in the plugin's native code | NDK `27.0.12077973`, CMake or JDK 21 is missing, or `minSdkVersion` is below 24 | Install them through the SDK Manager, or raise minSdk |
+| Android build fails in the plugin | Native step: NDK `27.0.12077973` or CMake is missing. Kotlin step: no JDK 21 | Install them through the SDK Manager and set the Gradle JDK. Keep `minSdkVersion` at 24 or higher, the supported floor |
 | Network errors on a phone | The device cannot reach a `localhost` or plain-HTTP server | Use HTTPS (ngrok), or the cleartext and `adb reverse` steps in [integration.md](integration.md) |
 | The release stays processing | The server's release worker failed or is slow | "Release stuck processing" |
 
 ## Device logs
 
-- Android: `adb logcat -s CodemagicPatch`. Release builds log only with `loggingBehavior: "production"` at the top level of the Capacitor config.
-- iOS: the Xcode console. The same `loggingBehavior` rule applies.
+- Android: `adb logcat -s CodemagicPatch`. Release builds log only with `loggingBehavior: "production"` (top level, or under `android`).
+- iOS: the Xcode console, with the same `loggingBehavior` rule (top level, or under `ios`).
+- The plugin's native logs cover configuration problems only. For update failures, use the CLI's failure reports above.

@@ -35,7 +35,7 @@ plugins: {
 - **Native overrides win, key by key.** These keys in `Info.plist` or Android string resources override the config:
   - `CodemagicPatchDeploymentKey`, `CodemagicPatchApiUrl`, `CodemagicPatchDownloadBaseUrl`, `CodemagicPatchPublicKey`, `CodemagicPatchMaxLaunchAttempts`.
   - They let a scheme, build configuration or flavor carry its own key. They are also the leftovers to look for when the config seems ignored.
-- **Invalid or missing config is logged** (iOS via Capacitor's logger, Android under the `CodemagicPatch` tag; release builds show logs only with Capacitor's top-level `loggingBehavior: "production"`).
+- **Invalid or missing config is logged** (iOS via Capacitor's logger, Android under the `CodemagicPatch` tag; release builds show logs only with `loggingBehavior: "production"`, set at the top level of the Capacitor config or under `ios` / `android`, where it takes precedence). Native code logs configuration problems only.
   - Checking and downloading then fail with `CONFIGURATION_INVALID`.
   - Updates already installed keep booting.
 
@@ -87,7 +87,7 @@ It never throws. It resolves to `"up-to-date"`, `"update-installed"`, `"embedded
   - `{downloadBaseUrl}/{deploymentKey}/{binaryVersion}/manifest.json` otherwise, or after a 404 on that URL.
   - A 404 means "no update". A wrong key, binary version or base URL therefore looks like "up to date".
 - **Downloads.** A binary diff against the running update when one applies, else the full `bundle.tar.zst`; a failed diff retries the full bundle once. The package hash is verified, and the signature too when a public key is configured.
-- **Install modes.** `ON_NEXT_RESTART` is the default; mandatory updates use `IMMEDIATE`. `ON_NEXT_RESUME` also exists, with `minimumBackgroundDuration`.
+- **Install modes.** `ON_NEXT_RESTART` is the default; mandatory updates use `IMMEDIATE`. `ON_NEXT_RESUME` and `ON_NEXT_SUSPEND` also exist; `minimumBackgroundDuration` applies to both.
 - **Activation.** Activating reloads the WebView. iOS keeps the current URL. Android goes back to the start URL.
 
 ## What a bundle is
