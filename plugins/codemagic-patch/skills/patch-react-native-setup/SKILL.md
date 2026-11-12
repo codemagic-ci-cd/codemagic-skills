@@ -21,11 +21,11 @@ Commands, flags and snippets are maintained in the docs at https://patch.codemag
 
 1. **Signing in stays with the person.** `cmpatch login` opens a browser for OAuth consent. Start it, ask the user to finish it, then work from the stored session. With a token the user hands you, use `CODEMAGIC_PATCH_TOKEN`, not a command-line flag.
 2. **Never print, commit or paste secrets**: personal access tokens (`cm_pat_…`), the server's `.env.selfhost`, OAuth client secrets, code-signing private keys. Deployment keys are not secrets; they are built into the app.
-3. **Ask before** installing or upgrading a server, publishing to any deployment other than Staging, promoting or rolling back, running `npx expo prebuild --clean`, removing another OTA library, or changing release-build settings the user did not ask about.
+3. **Ask before** installing or upgrading a server, publishing to any deployment other than Staging, promoting or rolling back, running `npx expo prebuild --clean`, removing another OTA library, or changing release-build settings the user did not ask about. Test-only changes the skill calls for (such as allowing cleartext for a local server) are fine once you have told the user, and they go in your report as something to revert.
 4. **Staging first.** The first test binary carries the Staging deployment key. Production devices only get releases published to Production, and only once a binary with the Production key is installed.
 5. **One Patch app per platform.** iOS and Android have separate apps and deployment keys. Never reuse a key across platforms.
 6. **An OTA cannot add the SDK.** After integrating, the user must build and install a new release binary before any OTA test. Debug builds load JavaScript from Metro and never apply an update.
-7. **Publish from what was built.** The first release for a binary version records its native fingerprint. Commit native lockfiles (`Podfile.lock`) before the first release, and publish from the commit the installed binary was built from.
+7. **Publish with the native state that was built.** The first release for a binary version records its native fingerprint. Commit `Podfile.lock` and whatever else `pod install` changed before the build, then change only JavaScript between the build and the release.
 8. **Preview, then act.** Use `--dry-run` before anything that changes what devices receive, and `--format json` when you need to read a result.
 
 ## Workflow
@@ -92,15 +92,15 @@ Follow [references/integration.md](references/integration.md), in the shape your
 
 ### 5. Check the integration
 
-Go through the checklist at the end of [references/integration.md](references/integration.md), then run `cmpatch doctor` from the app root. On a standard single-app layout, `cmpatch wire --dry-run --diff` changes nothing and shows the edits it would make; treat any edit it proposes that you did not make as a question to answer.
+Go through the checklist at the end of [references/integration.md](references/integration.md), then run `cmpatch doctor` from the app root. When `ios/` and `android/` sit in the app root and there is one app target, `cmpatch wire --dry-run --diff` is a second opinion: it changes nothing and lists the edits it would make. Treat any edit it proposes that you did not make as a question to answer.
 
 ### 6. Build and install a release binary
 
-Build a release-configuration binary with the Staging key and install it on a simulator, emulator or device. Ask the user to do this if you cannot run the build or reach the device. For a plain-HTTP test server, see section 8 of [references/integration.md](references/integration.md). Note the installed binary version (iOS `CFBundleShortVersionString`, Android `versionName`), and commit the native lockfiles.
+Commit the integration, then build a release-configuration binary from that commit, with the Staging key, and install it on a simulator, emulator or device. Ask the user to do this if you cannot run the build or reach the device, and name the commit to build from. For a plain-HTTP test server, see section 8 of [references/integration.md](references/integration.md). Note the installed binary version (iOS `CFBundleShortVersionString`, Android `versionName`).
 
 ### 7. Publish the first release to Staging
 
-Make a small visible change, then publish one release per platform from the app root, dry run first: [references/server-and-release.md](references/server-and-release.md). Wait for `cmpatch release inspect … --wait` to report `published`.
+After the binary is built, make a small visible JavaScript change, so the update is distinguishable from what the binary already contains. Then publish one release per platform from the app root, dry run first: [references/server-and-release.md](references/server-and-release.md). Check that the dry run compiled Hermes bytecode when the app uses Hermes. Wait for `cmpatch release inspect … --wait` to report `published`.
 
 ### 8. Verify on the device
 

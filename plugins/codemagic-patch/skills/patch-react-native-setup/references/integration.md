@@ -140,7 +140,7 @@ Find the root component through the entry: `index.js` → `AppRegistry.registerC
 
 ## 6. Native dependencies
 
-- **CocoaPods:** `cd ios && pod install`, or `bundle exec pod install` when the project has a `Gemfile`. Commit `Podfile.lock`.
+- **CocoaPods:** install pods the way the project does. Look at its README and scripts. With a `Gemfile` that pins CocoaPods, that is `bundle install` and then `bundle exec pod install`; otherwise `cd ios && pod install`. Commit `Podfile.lock` and the tracked files `pod install` changed (`project.pbxproj`, the `.xcworkspace`) before the build. Generated files it writes (`ios/Pods`, `ios/build`, `ios/.xcode.env.local`) are outside the fingerprint.
 - **SwiftPM mode:** never run `pod install`. Run `npx react-native spm` after installing the SDK and on every fresh checkout. Never opt the SDK out with `platforms: { ios: null }`; the app would build without Patch.
 - **Expo generated projects:** `npx expo prebuild` (ask before `--clean`), then `pod install` unless the app uses Expo's Swift Package Manager experiment.
 - **Android:** the SDK compiles C code, so the Android SDK needs the NDK and CMake. Its Gradle module finds `react-native` the way autolinking does, by running `node --print "require.resolve('react-native/package.json')"` in the app's `android/` directory, so hoisted monorepo layouts work as long as `node` is on Gradle's `PATH`. Where that cannot resolve, set `ext.reactNativeDir` in `android/build.gradle`.
@@ -160,7 +160,7 @@ Merge `@codemagic` into the existing `transformIgnorePatterns` rather than repla
 
 A local evaluation server is `http://localhost`. Prefer an HTTPS server (an ngrok install) for anything beyond a simulator.
 
-- **Android** release builds block cleartext. React Native templates set `android:usesCleartextTraffic="${usesCleartextTraffic}"` in `AndroidManifest.xml`, and the React Native Gradle plugin sets that placeholder to `false` for release after the app's own Gradle config has run. For a local test build, set the attribute to `"true"` in the manifest. Revert it before any store build. Reach the host from an emulator or USB device with `adb reverse tcp:<api port> tcp:<api port>` and the same for the storage port.
+- **Android** release builds block cleartext. React Native templates set `android:usesCleartextTraffic="${usesCleartextTraffic}"` in `AndroidManifest.xml`, and the React Native Gradle plugin sets that placeholder to `false` for release after the app's own Gradle config has run. For a local test build, set the attribute to `"true"` in the manifest, tell the user, and list it as something to revert before any store build. The manifest is part of the Android fingerprint, so a test build with this edit and a store build without it fingerprint differently. Give the store build a new `versionName`, or test against an HTTPS server instead. Reach the host from an emulator or USB device with `adb reverse tcp:<api port> tcp:<api port>`, and the same for the storage port.
 - **iOS:** the React Native template allows local networking (`NSAllowsLocalNetworking`), so a simulator reaches `localhost`. Other plain-HTTP hosts need an App Transport Security exception; do not ship one.
 
 ## 9. Staging and Production binaries
@@ -178,4 +178,4 @@ Read the diff back against [how-it-works.md](how-it-works.md):
 - [ ] Readiness: `Patch.wrap` on the root, or `sync()` after initialization.
 - [ ] No other OTA system is active.
 
-Then run `cmpatch doctor` from the app root (`--format json` to read it). On a standard single-app layout, `cmpatch wire --dry-run --diff` is a second opinion: it changes nothing and shows the edits it would make. If it proposes an edit you did not make, find out why before you continue.
+Then run `cmpatch doctor` from the app root (`--format json` to read it). When `ios/` and `android/` sit in the app root and there is one app target, `cmpatch wire --dry-run --diff` is a second opinion: it changes nothing and shows the edits it would make. If it proposes an edit you did not make, find out why before you continue.

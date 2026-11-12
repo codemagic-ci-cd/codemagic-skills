@@ -34,11 +34,12 @@ cmpatch init --server-url <api-url> --ios-app <Name>-iOS --android-app <Name>-An
 - With flags, `init` only selects apps that already exist. Create them first, as above; otherwise it exits `2` with "app was not found".
 - `--skip-wire` keeps `init` away from the app's code: you integrate the SDK yourself.
 - Commit the file; it holds no secrets.
-- `cmpatch context --remote` then shows the resolved server, team and project root, and the server's SDK configuration, including the download base URL.
+- `cmpatch context --remote` then shows the resolved server, team, project root and bundler, and the server's SDK configuration, including the download base URL.
+- `init --skip-wire` suggests `release-react` as the next step. Ignore that until the SDK is integrated and a binary is built.
 
 ## Publish a release
 
-Release only once a binary with the SDK has been built and installed, and publish from the **same commit and native state** that binary was built from. The first release for a binary version records the native fingerprint. That fingerprint covers `ios/`, `android/`, committed lockfiles such as `ios/Podfile.lock`, autolinked native dependencies, the React Native version, and `.gitignore`. A later release whose fingerprint disagrees is blocked. So commit `Podfile.lock` after `pod install`, before the first release. Read [Fingerprinting](https://patch.codemagic.io/docs/using-patch/fingerprinting.md).
+Release only once a binary with the SDK has been built and installed, and publish from the **same commit and native state** that binary was built from. The first release for a binary version records the native fingerprint. That fingerprint covers `ios/` and `android/` (including committed lockfiles such as `ios/Podfile.lock`), autolinked native dependencies, the React Native version, the `scripts` block of `package.json`, and `.gitignore`. A later release whose fingerprint disagrees is blocked. So commit `Podfile.lock` after `pod install`, before the first release. Read [Fingerprinting](https://patch.codemagic.io/docs/using-patch/fingerprinting.md).
 
 From the app root:
 
@@ -56,6 +57,9 @@ Repeat for Android.
   - `--xcode-target-name` / `--build-configuration-name` when there are several app targets or configurations with different versions;
   - `--bundler` / `--entry-file` when detection fails.
 - The target binary version must equal the installed app's `CFBundleShortVersionString` / `versionName` exactly.
+- **Hermes.** React Native 0.70+ apps use Hermes unless they opted out (`hermesEnabled=false` in `android/gradle.properties`, `hermes_enabled => false` in the Podfile). `release-react` then compiles the bundle to Hermes bytecode with `hermesc`; check the dry run's output for that step.
+  - In a monorepo where `react-native` and `hermes-compiler` are hoisted out of the app's own `node_modules`, `release-react` can miss them. Android stops with "Could not find hermesc under project root". iOS publishes plain JavaScript without saying so.
+  - Tell the user. `--hermes false` publishes plain JavaScript, which a Hermes binary runs from source, with slower startup. Use it only with their agreement, for testing. Otherwise the bundle needs `hermesc` reachable from the app root.
 - Devices receive a release only after the server has processed it: wait for `inspect --wait` to report `published`.
 - On a fingerprint disagreement, stop and find out why. Pass `--allow-fingerprint-mismatch` only after the user confirms the release targets the binary they mean.
 - For each store build, the docs recommend registering its fingerprint with a disabled release (`--disabled`) from that build's commit. Mention it when the user moves to Production.

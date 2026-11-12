@@ -12,7 +12,7 @@ Run the read-only checks from the app root before you change anything:
 | One platform and deployment | `cmpatch doctor --platform ios --app <app> --deployment Staging --verbose` |
 | After publishing | `cmpatch doctor --verify-delivery` |
 | Release state | `cmpatch release inspect --app <app> --deployment Staging --label <label> --wait` |
-| Resolved server, app and deployment | `cmpatch context --remote` |
+| Resolved server, team, project root and the server's SDK configuration | `cmpatch context --remote` |
 | Server health | `cmpatch server status` |
 
 Use `--format json` to read the results. Doctor exits `1` on a confirmed failure, and `0` can still leave checks unresolved, so read the report rather than only the exit code. Doctor reads the project, the server and the published releases; it cannot see the installed build. When native target selection is ambiguous, pass `--plist-file`, `--android-strings-file` or `--gradle-file`.
@@ -35,6 +35,7 @@ Use `--format json` to read the results. Doctor exits `1` on a confirmed failure
 | `IMMEDIATE` install or `restartApp()` fails on Android | The `Application` does not implement `ReactApplication` | Implement it, or let the update apply on the next cold start |
 | A new store build still runs an older OTA update | Only the build number changed; Patch keys stored updates to the marketing version / `versionName` | Bump the marketing version with each native release |
 | `doctor` warns about HTTP 403 on the download URL | It probes the download base itself, which storage may refuse to list | Informational on its own. Run `doctor --verify-delivery` after publishing to check the real files |
+| `release-react` says "Could not find hermesc under project root", or the iOS dry run shows no Hermes step | `react-native` / `hermes-compiler` are hoisted out of the app's `node_modules` in a monorepo | See "Hermes" in [server-and-release.md](server-and-release.md); tell the user before publishing with `--hermes false` |
 | The release stays `uploaded` or `processing` | The server's release worker failed or is slow | `release inspect --wait`, then the server logs. "Release stuck processing" |
 | `npx react-native spm add` stops on mixed Swift and Objective-C sources | The SDK is older than 0.7.0 | Upgrade the SDK; do not set `platforms: { ios: null }`. "`npx react-native spm add` reports mixed Swift and Objective-C sources" |
 | Jest fails with `'NativeCodemagicPatch' could not be found`, or on `export` in the SDK's source | The SDK's Jest setup file, or `@codemagic` in `transformIgnorePatterns`, is missing | [Testing your app](https://patch.codemagic.io/docs/setup/testing.md) |
