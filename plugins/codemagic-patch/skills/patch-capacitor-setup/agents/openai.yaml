@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codemagic Patch: Capacitor setup"
+  short_description: "Add self-hosted live updates to a Capacitor or Ionic app"
+  default_prompt: "Use $patch-capacitor-setup to add Codemagic Patch OTA updates to this app and publish a test update to Staging."

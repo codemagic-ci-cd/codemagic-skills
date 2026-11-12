@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codemagic Patch: React Native setup"
+  short_description: "Add self-hosted OTA updates to a React Native or Expo app"
+  default_prompt: "Use $patch-react-native-setup to add Codemagic Patch OTA updates to this app and publish a test update to Staging."
