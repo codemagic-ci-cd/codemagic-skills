@@ -1,6 +1,6 @@
 # Codemagic Skills for AI Agents
 
-Agent skills for Codemagic tasks, packaged as a plugin marketplace. They work with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, Windsurf, and any agent that supports the [Agent Skills spec](https://agentskills.io/).
+Agent skills for Codemagic tasks, packaged as a plugin marketplace for Claude Code, Codex and Cursor. The skills also work with GitHub Copilot, Windsurf, and any agent that supports the [Agent Skills spec](https://agentskills.io/).
 
 ## Plugins
 
@@ -23,6 +23,17 @@ Each plugin's README lists its skills.
 
 Install `codemagic-ci-cd@codemagic` or `codemagic-codepush@codemagic` the same way.
 
+### Codex
+
+```bash
+codex plugin marketplace add codemagic-ci-cd/codemagic-skills
+codex plugin add codemagic-patch@codemagic
+```
+
+### Cursor
+
+In **Customize**, add a marketplace **From GitHub Repository** with `codemagic-ci-cd/codemagic-skills`, then install `codemagic-patch` (or another plugin) from it. Team admins can add the repository as a team marketplace in the Cursor dashboard instead.
+
 ### Any agent, with the skills CLI
 
 ```bash
@@ -38,10 +49,14 @@ Copy a skill folder (`plugins/<plugin>/skills/<skill>/`) into your agent's skill
 ## Layout
 
 ```text
-.claude-plugin/marketplace.json      the marketplace "codemagic", listing the three plugins
+.claude-plugin/marketplace.json      the marketplace "codemagic" (Claude Code; Codex reads it too)
+.cursor-plugin/marketplace.json      the same marketplace for Cursor
 plugins/<plugin>/.claude-plugin/plugin.json
+plugins/<plugin>/.cursor-plugin/plugin.json
 plugins/<plugin>/skills/<skill>/SKILL.md   (+ references/, agents/openai.yaml)
 ```
+
+The Claude and Cursor manifests describe the same plugins. When you add a plugin or change a name, description or version, change both.
 
 ## License
 

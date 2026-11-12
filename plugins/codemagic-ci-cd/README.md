@@ -33,6 +33,15 @@ In earlier versions, add the marketplace first:
 /plugin install codemagic-ci-cd@codemagic
 ```
 
+In Codex:
+
+```bash
+codex plugin marketplace add codemagic-ci-cd/codemagic-skills
+codex plugin add codemagic-ci-cd@codemagic
+```
+
+In Cursor, add `codemagic-ci-cd/codemagic-skills` in **Customize** as a marketplace **From GitHub Repository**, then install `codemagic-ci-cd`.
+
 With the [`skills` CLI](https://github.com/vercel-labs/skills), for any agent:
 
 ```bash
