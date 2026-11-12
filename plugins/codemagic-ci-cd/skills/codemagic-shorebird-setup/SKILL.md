@@ -1,5 +1,5 @@
 ---
-name: codemagic-codepush-setup
+name: codemagic-shorebird-setup
 description: Agentic skill for setting up Shorebird code push (OTA updates) on Codemagic. Covers local initialization, API key authentication, Android and iOS release workflows, patch workflows, signing setup, and common failure modes including silent hang. For use by AI agents autonomously configuring Flutter code push pipelines on Codemagic.
 ---
 
