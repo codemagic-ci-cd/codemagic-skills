@@ -37,14 +37,22 @@ In **Customize**, add a marketplace **From GitHub Repository** with `codemagic-c
 ### Any agent, with the skills CLI
 
 ```bash
-npx skills add codemagic-ci-cd/codemagic-skills
+npx skills add codemagic-ci-cd/codemagic-skills --skill <name>
 ```
 
-The [`skills` CLI](https://github.com/vercel-labs/skills) asks which skills and agents to install. Pick one with `--skill <name>`, for example `--skill patch-react-native-setup`.
+For example, `--skill patch-react-native-setup` or `--skill codemagic-codepush`. Always name the skill. Without `--skill`, the [`skills` CLI](https://github.com/vercel-labs/skills) asks which of the 16 skills to install, and with `-y` it installs all of them.
 
 ### By hand
 
 Copy a skill folder (`plugins/<plugin>/skills/<skill>/`) into your agent's skills directory, for example `.claude/skills/` or `.agents/skills/`.
+
+## Moved from `skills/`
+
+Skills used to live in `skills/<name>/`. They now live in `plugins/<plugin>/skills/<name>/`. For example, `skills/codemagic-codepush/` is now `plugins/codemagic-codepush/skills/codemagic-codepush/`.
+
+- `npx skills update` finds a skill at its new path and rewrites `skills-lock.json` to match.
+- Restoring an older `skills-lock.json` with `npx skills install` fails with "No matching skills found", because the lock still names the old path. Run `npx skills update codemagic-codepush` once, then commit the updated lock.
+- The Shorebird skill is now `codemagic-shorebird-setup`. It was named `codemagic-codepush-setup` and could not be installed with the skills CLI.
 
 ## Layout
 
