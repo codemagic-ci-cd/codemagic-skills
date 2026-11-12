@@ -31,7 +31,7 @@ Ask the user for the app names; `<Name>-iOS` / `<Name>-Android` is the docs' con
 cmpatch init --server-url <api-url> --ios-app <Name>-iOS --android-app <Name>-Android --deployment Staging --skip-wire --yes
 ```
 
-- With flags, `init` only selects apps that already exist. Create them first, as above; otherwise it exits `2` with "app was not found".
+- With flags, `init` only selects apps that already exist. Create them first, as above; otherwise it exits `2` with `ios app "<name>" was not found.`
 - `--skip-wire` keeps `init` away from the app's code: you integrate the SDK yourself.
 - Commit the file; it holds no secrets.
 - `cmpatch context --remote` then shows the resolved server, team, project root and bundler, and the server's SDK configuration, including the download base URL.
@@ -39,7 +39,7 @@ cmpatch init --server-url <api-url> --ios-app <Name>-iOS --android-app <Name>-An
 
 ## Publish a release
 
-Release only once a binary with the SDK has been built and installed, and publish from the **same commit and native state** that binary was built from. The first release for a binary version records the native fingerprint. That fingerprint covers `ios/` and `android/` (including committed lockfiles such as `ios/Podfile.lock`), autolinked native dependencies, the React Native version, the `scripts` block of `package.json`, and `.gitignore`. A later release whose fingerprint disagrees is blocked. So commit `Podfile.lock` after `pod install`, before the first release. Read [Fingerprinting](https://patch.codemagic.io/docs/using-patch/fingerprinting.md).
+Release only once a binary with the SDK has been built and installed, and publish from the **same commit and native state** that binary was built from. The first release for a deployment and binary version records the native fingerprint. It hashes files as they are on disk, committed or not: `ios/` and `android/` (including `ios/Podfile.lock`), autolinked native dependencies, the React Native version, the `scripts` block of `package.json`, `patches/`, `.gitignore`, and for Expo the resolved app config. So for Expo, run the release with the same environment variables the build used. A later release whose fingerprint disagrees is blocked. So commit `Podfile.lock` after `pod install`, before the first release. Read [Fingerprinting](https://patch.codemagic.io/docs/using-patch/fingerprinting.md).
 
 From the app root:
 

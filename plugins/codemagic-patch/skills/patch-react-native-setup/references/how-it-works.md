@@ -16,7 +16,7 @@ Read this before you edit anything. Every integration step exists because of one
 | `CodemagicPatchDownloadBaseUrl` | yes | Where manifests and bundles are fetched; the server's exact `PUBLIC_BASE_URL` |
 | `CodemagicPatchApiUrl` | yes | Where metrics are sent; a wrong value breaks metrics, not updates |
 | `CodemagicPatchPublicKey` | no | PEM public key. When set, every release must be signed, and unsigned ones are rejected |
-| `CodemagicPatchMaxLaunchAttempts` | no | Launches a new update gets to confirm readiness before rollback; default `2` |
+| `CodemagicPatchMaxLaunchAttempts` | no | Launches a new update gets to confirm readiness before rollback; default `2`. On Android it must be a `<string>` resource; an `<integer>` is ignored |
 
 - iOS reads them from the **main app bundle's** `Info.plist`. App extensions have their own bundle and do not count.
 - Android reads them as **string resources looked up by name**, so any resource source works: `res/values/strings.xml`, a flavor's or build type's `res/values/`, or Gradle `resValue`.
@@ -54,9 +54,9 @@ A newly installed update is *pending* until JavaScript running that update calls
 - **Manifest URLs**, built from the download base URL:
   - `{downloadBaseUrl}/{deploymentKey}/{binaryVersion}/{runningPackageHash}/manifest.json` while an update is running;
   - otherwise, or after a 404 on that URL, `{downloadBaseUrl}/{deploymentKey}/{binaryVersion}/manifest.json`.
-  - A 404 means "no update". A wrong key, binary version or base URL therefore looks exactly like "up to date", with no error.
+  - A 404 means "no update". A wrong key or binary version therefore looks exactly like "up to date", with no error. Any other failure (a 403 from storage, a network error) makes `sync()` resolve `"error"`, which release builds do not log either.
 - **Downloads** are a binary diff against the running update when one applies, else the full `bundle.tar.zst`. A failed diff retries the full bundle once. The package hash is verified before install, and the signature too when a public key is configured.
-- **Install modes**: `ON_NEXT_RESTART` is the default for regular updates; mandatory updates use `IMMEDIATE`. `ON_NEXT_RESUME` and `ON_NEXT_SUSPEND` also exist, with `minimumBackgroundDuration` in milliseconds. `checkFrequency: ON_APP_RESUME` also checks when the app returns to the foreground.
+- **Install modes**: `ON_NEXT_RESTART` is the default for regular updates; mandatory updates use `IMMEDIATE`. `ON_NEXT_RESUME` and `ON_NEXT_SUSPEND` also exist, with `minimumBackgroundDuration` in milliseconds. `Patch.wrap(App, { checkFrequency: ON_APP_RESUME })` also checks when the app returns to the foreground. `checkFrequency` belongs to the wrapper; an app that calls `sync()` itself checks only when it calls it.
 - **Restart.** iOS reloads React Native with the new bundle URL. Android needs the `Application` to implement `ReactApplication`; without it, `IMMEDIATE` installs and `restartApp()` fail. On hosts where the bundle loader cannot be swapped, the update applies on the next cold start.
 
 ## Rules that follow for every integration
@@ -65,5 +65,5 @@ A newly installed update is *pending* until JavaScript running that update calls
 2. The bundle hook is the release path's only bundle source, and it falls back to the embedded bundle.
 3. The SDK is a dependency of the app package itself, so autolinking links the native module.
 4. Readiness is confirmed once the app is usable: `Patch.wrap` on the root, or `sync()` after initialization.
-5. Each native change ships with a new marketing version or `versionName`, because releases target that string exactly.
+5. Each native change ships with a new marketing version or `versionName`. Releases target that string exactly; fingerprint expansion can also deliver a release to other versions with the same native fingerprint.
 6. Only one OTA system chooses the bundle: no CodePush hook and no enabled `expo-updates` alongside Patch.

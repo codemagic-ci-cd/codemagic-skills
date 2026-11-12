@@ -10,7 +10,7 @@ Check what is published and what it supports before you install anything:
 npm view @codemagic/react-native-patch version peerDependencies
 ```
 
-The SDK supports React Native 0.73 and later: Old Architecture only on 0.73–0.75, both architectures from 0.76. Expo needs SDK 52 or later and a development build; Expo Go cannot load it. React Native's SwiftPM mode needs an SDK version that ships `Package.swift` (0.7.0 or later). If the published version is older, the app cannot use SwiftPM mode with Patch yet; tell the user.
+The SDK supports React Native 0.73 and later: Old Architecture only on 0.73–0.75, both architectures from 0.76. Expo needs SDK 52 or later and a development build; Expo Go cannot load it. React Native's SwiftPM mode needs React Native 0.88+, the New Architecture and an SDK version that ships `Package.swift` (0.7.0 or later). Expo's Swift Package Manager experiment needs `expo` 58.0.17 or later, and with npm, `expo-constants` as a direct dependency. If the published SDK is older, the app cannot use SwiftPM mode with Patch yet; tell the user.
 
 Install it into the **app's** `package.json` with the repository's package manager:
 
@@ -68,8 +68,9 @@ Do not edit `ios/` or `android/`; prebuild regenerates them. Add the plugin to t
 }]
 ```
 
-- Each platform block needs all three values. `publicKey` and `maxLaunchAttempts` are optional. Missing values fail `expo prebuild`.
+- Each platform block needs all three values. `publicKey` and `maxLaunchAttempts` are optional. Missing values fail `expo prebuild`, but a platform block left out entirely is accepted and leaves that platform without Patch, so include both.
 - In a dynamic `app.config.js` / `app.config.ts`, read the keys from environment variables (for example per EAS build profile), and set the same variables when you run prebuild locally.
+- `cmpatch release-react` does not read EAS profiles. The job that publishes OTAs must set the same `EXPO_PUBLIC_*` and app-config variables the build used, or the bundle ships different values and the fingerprint disagrees.
 - The plugin also writes the bundle hooks (sections 3 and 4) during prebuild. It finds them by the template's exact expressions, and prebuild fails if a customized `AppDelegate` or `MainApplication` no longer contains them. In that case make the edit by hand in a config plugin of the project's own, or move the app to maintained native projects.
 - Disable or remove `expo-updates` first; two systems cannot both pick the bundle.
 
@@ -83,7 +84,8 @@ Find the expression that returns the embedded bundle (`Bundle.main.url(forResour
 | --- | --- | --- |
 | React Native 0.79+ (Swift `ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate`) | `bundleURL()` in `AppDelegate.swift` | Swift, below |
 | React Native 0.77–0.78 (Swift `AppDelegate: RCTAppDelegate`) | `override func bundleURL()` | Swift, below |
-| React Native 0.73–0.76 (Objective-C++ `AppDelegate.mm`) | `- (NSURL *)bundleURL` or `sourceURLForBridge:` | Objective-C++, below |
+| React Native 0.74–0.76 (Objective-C++ `AppDelegate.mm`) | the release branch of `- (NSURL *)bundleURL`; `sourceURLForBridge:` returns it. Editing only `sourceURLForBridge:` misses the New Architecture's bridgeless startup | Objective-C++, below |
+| React Native 0.73 (Objective-C++ `AppDelegate.mm`) | the release branch of `- (NSURL *)getBundleURL` | Objective-C++, below |
 | Expo SDK 53+ (`ExpoReactNativeFactoryDelegate`) | `bundleURL()`; keep the `.expo/.virtual-metro-entry` debug root and Expo's superclass | Swift, below |
 | Expo SDK 52 (`AppDelegate.mm`) | the release branch of `bundleURL` | Objective-C++, below |
 | Brownfield or custom host (`RCTRootView`, `RCTReactNativeFactory` built by hand) | wherever the host passes a bundle URL | same rule |
@@ -125,7 +127,8 @@ return [CodemagicPatch bundleURL] ?: [[NSBundle mainBundle] URLForResource:@"mai
 | `getDefaultReactHost(...)` (React Native 0.82+) | add the argument `jsBundleFilePath = CodemagicPatch.getJSBundleFile(applicationContext)` |
 | Expo SDK 52–54 (`ReactNativeHostWrapper`) | the `getJSBundleFile()` override, inside the wrapped `DefaultReactNativeHost` |
 | Expo SDK 55+ (`ExpoReactHostFactory.getDefaultReactHost(...)`) | the `jsBundleFilePath = …` argument; keep the other arguments |
-| Java `MainApplication` | `return CodemagicPatch.getJSBundleFile(getApplicationContext());` in `getJSBundleFile()` |
+| Java `MainApplication` | `return CodemagicPatch.getJSBundleFile(getApplicationContext());` in `getJSBundleFile()`, or the same call as the `jsBundleFilePath` argument on 0.82+. The Expo config plugin edits Kotlin only, and stops with an error on a Java `MainApplication`: edit it by hand |
+| Brownfield (`ReactInstanceManagerBuilder`, a host built by hand) | `.setJSBundleFile(CodemagicPatch.getJSBundleFile(context))` when the result is not null, else the embedded asset |
 
 Import `io.codemagic.patch.CodemagicPatch`. The `Application` must implement `ReactApplication`, as the templates do; otherwise `IMMEDIATE` installs and `restartApp()` fail.
 
@@ -136,14 +139,14 @@ Find the root component through the entry: `index.js` → `AppRegistry.registerC
 - **Usual case:** export the root through the wrapper, `export default Patch.wrap(App)`, with `import * as Patch from "@codemagic/react-native-patch"`.
 - **Already wrapped by another library** (Sentry, a store provider HOC): compose them, for example `export default Sentry.wrap(Patch.wrap(App))`. Remove a CodePush wrapper when migrating.
 - **Asynchronous initialization** (auth bootstrap, remote config, database migration, a splash screen held until ready): do not use the wrapper. Call `void Patch.sync()` once initialization has succeeded, so a crash during initialization still counts toward rollback.
-- **Leave the install timing at its defaults** unless the user asks. For test builds only, `sync({ installMode: Patch.InstallMode.IMMEDIATE })` shortens the loop; revert it before shipping.
+- **Leave the install timing at its defaults** unless the user asks. For test builds only, `Patch.wrap(App, { installMode: Patch.InstallMode.IMMEDIATE })` (or the same option on your own `sync()` call) shortens the loop; revert it before shipping.
 
 ## 6. Native dependencies
 
 - **CocoaPods:** install pods the way the project does. Look at its README and scripts. With a `Gemfile` that pins CocoaPods, that is `bundle install` and then `bundle exec pod install`; otherwise `cd ios && pod install`. Commit `Podfile.lock` and the tracked files `pod install` changed (`project.pbxproj`, the `.xcworkspace`) before the build. Generated files it writes (`ios/Pods`, `ios/build`, `ios/.xcode.env.local`) are outside the fingerprint.
 - **SwiftPM mode:** never run `pod install`. Run `npx react-native spm` after installing the SDK and on every fresh checkout. Never opt the SDK out with `platforms: { ios: null }`; the app would build without Patch.
 - **Expo generated projects:** `npx expo prebuild` (ask before `--clean`), then `pod install` unless the app uses Expo's Swift Package Manager experiment.
-- **Android:** the SDK compiles C code, so the Android SDK needs the NDK and CMake. Its Gradle module finds `react-native` the way autolinking does, by running `node --print "require.resolve('react-native/package.json')"` in the app's `android/` directory, so hoisted monorepo layouts work as long as `node` is on Gradle's `PATH`. Where that cannot resolve, set `ext.reactNativeDir` in `android/build.gradle`.
+- **Android:** the SDK compiles C code, so the Android SDK needs the NDK and CMake. Its Gradle module finds `react-native` the way autolinking does, by running `node --print "require.resolve('react-native/package.json')"` in the app's `android/` directory, so hoisted monorepo layouts work as long as `node` is on Gradle's `PATH`. Where that cannot resolve, set `ext.reactNativeDir` in `android/build.gradle` to an absolute path, for example `"$rootDir/../node_modules/react-native"`; a relative path would resolve against the SDK's own module.
 
 ## 7. Tests
 
@@ -160,7 +163,11 @@ Merge `@codemagic` into the existing `transformIgnorePatterns` rather than repla
 
 A local evaluation server is `http://localhost`. Prefer an HTTPS server (an ngrok install) for anything beyond a simulator.
 
-- **Android** release builds block cleartext. React Native templates set `android:usesCleartextTraffic="${usesCleartextTraffic}"` in `AndroidManifest.xml`, and the React Native Gradle plugin sets that placeholder to `false` for release after the app's own Gradle config has run. For a local test build, set the attribute to `"true"` in the manifest, tell the user, and list it as something to revert before any store build. The manifest is part of the Android fingerprint, so a test build with this edit and a store build without it fingerprint differently. Give the store build a new `versionName`, or test against an HTTPS server instead. Reach the host from an emulator or USB device with `adb reverse tcp:<api port> tcp:<api port>`, and the same for the storage port.
+- **Android** release builds block cleartext.
+  - **React Native 0.81+** templates set `android:usesCleartextTraffic="${usesCleartextTraffic}"` in the main `AndroidManifest.xml`, and the React Native Gradle plugin sets that placeholder to `false` for release after the app's own Gradle config has run.
+  - **On 0.73–0.80**, cleartext is allowed only in `src/debug/AndroidManifest.xml`.
+  - **Expo with generated projects:** set `android.usesCleartextTraffic: true` through `expo-build-properties`, because prebuild regenerates the manifest.
+  - **What to do in bare and maintained projects:** for a local test build, set `android:usesCleartextTraffic="true"` on `<application>` in the main manifest, tell the user, and list it as something to revert before any store build. The manifest is part of the Android fingerprint, so a test build with this edit and a store build without it fingerprint differently. Give the store build a new `versionName`, or test against an HTTPS server instead. Reach the host from an emulator or USB device with `adb reverse tcp:<api port> tcp:<api port>`, and the same for the storage port.
 - **iOS:** the React Native template allows local networking (`NSAllowsLocalNetworking`), so a simulator reaches `localhost`. Other plain-HTTP hosts need an App Transport Security exception; do not ship one.
 
 ## 9. Staging and Production binaries

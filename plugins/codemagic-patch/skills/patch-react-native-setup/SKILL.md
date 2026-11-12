@@ -25,7 +25,7 @@ Commands, flags and snippets are maintained in the docs at https://patch.codemag
 4. **Staging first.** The first test binary carries the Staging deployment key. Production devices only get releases published to Production, and only once a binary with the Production key is installed.
 5. **One Patch app per platform.** iOS and Android have separate apps and deployment keys. Never reuse a key across platforms.
 6. **An OTA cannot add the SDK.** After integrating, the user must build and install a new release binary before any OTA test. Debug builds load JavaScript from Metro and never apply an update.
-7. **Publish with the native state that was built.** The first release for a binary version records its native fingerprint. Commit `Podfile.lock` and whatever else `pod install` changed before the build, then change only JavaScript between the build and the release.
+7. **Publish with the native state that was built.** The first release for a deployment and binary version records its native fingerprint. Commit `Podfile.lock` and whatever else `pod install` changed before the build, then change only JavaScript between the build and the release.
 8. **Preview, then act.** Use `--dry-run` before anything that changes what devices receive, and `--format json` when you need to read a result.
 
 ## Workflow
@@ -104,7 +104,7 @@ After the binary is built, make a small visible JavaScript change, so the update
 
 ### 8. Verify on the device
 
-Cold-start the app, close it, and cold-start it again. The first launch downloads the update; the second runs it. The change should be visible, and `cmpatch release metrics` should count the device. If you cannot see the device, ask the user what the app shows. See [Verify a test release](https://patch.codemagic.io/docs/using-patch/verify-test-release.md).
+Cold-start the app, close it, and cold-start it again. The first launch downloads the update; the second runs it. The change should be visible. Metrics are sent when the app next comes to the foreground, so background and reopen it once more before expecting `cmpatch release metrics` to count the device. If you cannot see the device, ask the user what the app shows. See [Verify a test release](https://patch.codemagic.io/docs/using-patch/verify-test-release.md).
 
 Report what was set up: the server, the app names, which key each binary carries, the files you changed, the release labels, and what remains (for example Production builds, or reverting a cleartext setting).
 
