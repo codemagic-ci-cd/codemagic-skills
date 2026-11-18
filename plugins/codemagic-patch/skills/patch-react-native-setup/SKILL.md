@@ -7,7 +7,7 @@ compatibility: Needs Node.js 20.19+ or 22.12+, network access to the user's Patc
 
 # Codemagic Patch for React Native and Expo
 
-Codemagic Patch is a self-hosted OTA update service. The user runs the Patch server, and the app's release build downloads JavaScript bundle updates from it. Native code changes still need a store build.
+Codemagic Patch is an OTA update service. The user runs the Patch server, or Codemagic hosts it for them. The app's release build downloads JavaScript bundle updates from that server. Native code changes still need a store build.
 
 You integrate the SDK into the app yourself, fitted to how the project is laid out. You use the `cmpatch` CLI for the server side: apps, deployment keys, releases and diagnostics. For a Capacitor or Ionic app, use the `patch-capacitor-setup` skill instead.
 
@@ -63,13 +63,16 @@ The binary holds two server values: the API URL and the download base URL. Ask t
 
 | Situation | Command (the user confirms first) | Read |
 | --- | --- | --- |
-| They already run Patch | none; ask for the API URL | [Install](https://patch.codemagic.io/docs/install.md) |
-| Try it on a simulator or emulator | `cmpatch selfhost local-eval` (needs Docker) | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
-| Try it on a real phone without a domain | `cmpatch selfhost install --ngrok` | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
+| Codemagic hosts Patch for them | none; ask for the API URL and the download base URL from the dashboard | [Web dashboard](https://patch.codemagic.io/docs/using-patch/dashboard.md) |
+| They already run self-host Patch | none; ask for the API URL | [Install](https://patch.codemagic.io/docs/install.md) |
+| want to see how it works in demo | `cmpatch selfhost local-eval` (needs Docker) | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
+| Try it without a domain | `cmpatch selfhost install --ngrok` | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
 | Production on their own server and domain | `cmpatch selfhost install` | [Install](https://patch.codemagic.io/docs/install.md) |
 | Production without a server or domain | `cmpatch selfhost install --fly` | [Install](https://patch.codemagic.io/docs/install.md) |
 
 Install the CLI first: `npm install -g @codemagic/patch-cli`. The server commands are wizards that create infrastructure and OAuth apps in the user's accounts; let the user answer them.
+
+When Codemagic hosts Patch ([Hosted by Codemagic](https://patch.codemagic.io/docs/introduction/pricing.md#hosted-by-codemagic)), there is no server to install or upgrade: skip the `cmpatch selfhost` commands. Ask the user to sign in to their Patch dashboard, open any deployment's detail page, expand the SDK configuration panel, and give you `CodemagicPatchApiUrl` (the API URL) and `CodemagicPatchDownloadBaseUrl` (the download base URL). The two values are the same for every deployment on the server. If they have no app yet, they can create one in the dashboard first. You still need the CLI for step 3.
 
 ### 3. Create the Patch apps and collect keys and URLs
 
