@@ -1,0 +1,27 @@
+{
+  "name": "codemagic",
+  "owner": {
+    "name": "Codemagic"
+  },
+  "metadata": {
+    "description": "Agent skills from Codemagic: CI/CD for mobile apps, CodePush OTA updates, and self-hosted Codemagic Patch OTA updates.",
+    "pluginRoot": "plugins"
+  },
+  "plugins": [
+    {
+      "name": "codemagic-ci-cd",
+      "source": "codemagic-ci-cd",
+      "description": "Set up and troubleshoot Codemagic CI/CD for mobile apps: first build, codemagic.yaml, code signing, triggers, caching, testing, publishing and Shorebird."
+    },
+    {
+      "name": "codemagic-codepush",
+      "source": "codemagic-codepush",
+      "description": "Set up and run OTA updates for React Native apps with Codemagic-hosted CodePush (codepush.pro)."
+    },
+    {
+      "name": "codemagic-patch",
+      "source": "codemagic-patch",
+      "description": "Set up Codemagic Patch self-hosted OTA updates in React Native, Expo, Capacitor and Ionic apps, fitted to how each project is laid out."
+    }
+  ]
+}

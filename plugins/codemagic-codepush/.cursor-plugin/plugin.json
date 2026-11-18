@@ -1,0 +1,17 @@
+{
+  "name": "codemagic-codepush",
+  "description": "Set up and run OTA updates for React Native apps with Codemagic-hosted CodePush (codepush.pro).",
+  "version": "1.0.0",
+  "author": {
+    "name": "Codemagic"
+  },
+  "homepage": "https://docs.codemagic.io/rn-codepush/concepts/",
+  "repository": "https://github.com/codemagic-ci-cd/codemagic-skills",
+  "license": "MIT",
+  "keywords": [
+    "codepush",
+    "ota",
+    "react-native",
+    "codemagic"
+  ]
+}

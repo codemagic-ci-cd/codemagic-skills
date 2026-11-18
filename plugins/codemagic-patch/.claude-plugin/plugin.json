@@ -1,0 +1,13 @@
+{
+  "name": "codemagic-patch",
+  "description": "Set up Codemagic Patch self-hosted OTA updates in React Native, Expo, Capacitor and Ionic apps, fitted to how each project is laid out.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Codemagic",
+    "url": "https://codemagic.io"
+  },
+  "homepage": "https://patch.codemagic.io/docs/agent-skill",
+  "repository": "https://github.com/codemagic-ci-cd/codemagic-skills",
+  "license": "MIT",
+  "keywords": ["ota", "over-the-air", "react-native", "expo", "capacitor", "ionic", "codepush", "codemagic-patch"]
+}

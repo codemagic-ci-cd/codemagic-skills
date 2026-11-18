@@ -1,0 +1,20 @@
+{
+  "name": "codemagic-ci-cd",
+  "description": "Set up and troubleshoot Codemagic CI/CD for mobile apps: first build, codemagic.yaml, code signing, triggers, caching, testing, publishing and Shorebird.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Codemagic"
+  },
+  "homepage": "https://docs.codemagic.io/",
+  "repository": "https://github.com/codemagic-ci-cd/codemagic-skills",
+  "license": "MIT",
+  "keywords": [
+    "ci-cd",
+    "codemagic",
+    "flutter",
+    "react-native",
+    "ios",
+    "android",
+    "code-signing"
+  ]
+}
