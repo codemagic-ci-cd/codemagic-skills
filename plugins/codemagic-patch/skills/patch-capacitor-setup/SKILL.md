@@ -68,9 +68,9 @@ The app's config holds two server values: the API URL and the download base URL.
 | Situation | Command (the user confirms first) | Read |
 | --- | --- | --- |
 | Codemagic hosts Patch for them | none; ask for the API URL and the download base URL from the dashboard | [Web dashboard](https://patch.codemagic.io/docs/using-patch/dashboard.md) |
-| They already run Patch | none; ask for the API URL | [Install](https://patch.codemagic.io/docs/install.md) |
-| Try it on a simulator or emulator | `cmpatch selfhost local-eval` (needs Docker) | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
-| Try it on a real phone without a domain | `cmpatch selfhost install --ngrok` | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
+| They already run self-host Patch | none; ask for the API URL | [Install](https://patch.codemagic.io/docs/install.md) |
+| want to see how it works in demo | `cmpatch selfhost local-eval` (needs Docker) | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
+| Try it without a domain | `cmpatch selfhost install --ngrok` | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
 | Production on their own server and domain | `cmpatch selfhost install` | [Install](https://patch.codemagic.io/docs/install.md) |
 | Production without a server or domain | `cmpatch selfhost install --fly` | [Install](https://patch.codemagic.io/docs/install.md) |
 
