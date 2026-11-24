@@ -67,7 +67,7 @@ The app's config holds two server values: the API URL and the download base URL.
 
 | Situation | Command (the user confirms first) | Read |
 | --- | --- | --- |
-| Codemagic hosts Patch for them | none; ask for the API URL and the download base URL from the dashboard | [Web dashboard](https://patch.codemagic.io/docs/using-patch/dashboard.md) |
+| Codemagic hosts Patch for them | reuse their team, or use `cmpatch team create` when managed onboarding is enabled | [Web dashboard](https://patch.codemagic.io/docs/using-patch/dashboard.md) |
 | They already run self-host Patch | none; ask for the API URL | [Install](https://patch.codemagic.io/docs/install.md) |
 | want to see how it works in demo | `cmpatch selfhost local-eval` (needs Docker) | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
 | Try it without a domain | `cmpatch selfhost install --ngrok` | [Local quickstart](https://patch.codemagic.io/docs/local-quickstart.md) |
@@ -76,7 +76,31 @@ The app's config holds two server values: the API URL and the download base URL.
 
 Servers are installed with the React Native CLI, `cmpatch` (`npm install -g @codemagic/patch-cli`). The server commands are wizards that create infrastructure and OAuth apps in the user's accounts; let the user answer them.
 
-When Codemagic hosts Patch ([Hosted by Codemagic](https://patch.codemagic.io/docs/introduction/pricing.md#hosted-by-codemagic)), there is no server to install or upgrade: skip `cmpatch` and its `selfhost` commands. Ask the user to sign in to their Patch dashboard, open any deployment's detail page, expand the SDK configuration panel, and give you the API URL (`apiUrl`) and the download base URL (`downloadBaseUrl`). The two values are the same for every deployment on the server. If they have no app yet, they can create one in the dashboard first, with the framework set to **Capacitor**.
+When Codemagic hosts Patch ([Hosted by Codemagic](https://patch.codemagic.io/docs/introduction/pricing.md#hosted-by-codemagic)), there is no server to install or upgrade: skip the `cmpatch selfhost` commands. Ask the user to sign in to their Patch dashboard, open any deployment's detail page, expand the SDK configuration panel, and give you the API URL (`apiUrl`) and the download base URL (`downloadBaseUrl`). The two values are the same for every deployment on the server. If they have no app yet, they can create one in the dashboard first, with the framework set to **Capacitor**.
+
+
+If the user needs a **new managed team**, check `cmpatch team create --help`
+first (`npm install -g @codemagic/patch-cli` provides `cmpatch`). This command
+requires a CLI release that includes it and a managed server with public
+onboarding enabled. Once the user has chosen the team name and the verified
+primary email of the account they will sign in with, run:
+
+```bash
+cmpatch team create --name <team-name> --owner-email <owner-email> \
+  --server-url <managed-api-url> --format json
+```
+
+No login or operator PAT is required for this command. Keep the returned
+`team.id`, `urls.api`, and `urls.download_base`; show `urls.team` to the user.
+A `pending` invitation is fulfilled when the owner signs in with the matching
+account before it expires; an existing account receives ownership immediately.
+No email is sent. If the response is lost or the server reports an uncertain
+outcome, contact Patch support before retrying. If the command or endpoint is
+unavailable, use the hosted service's existing onboarding path; do not call
+administrator APIs or install a self-host server as a fallback.
+
+Team creation uses `cmpatch`; continue with `cmpatch-capacitor login` and the
+Capacitor CLI for apps and releases. The two CLIs keep separate sign-in sessions.
 
 ### 3. Create the Patch apps and collect keys and URLs
 
