@@ -68,4 +68,4 @@ Repeat for Android.
 
 - `cmpatch release metrics --app <app> --deployment Staging --label <label>` shows downloads and installs per release.
 - `cmpatch doctor` and `cmpatch doctor --verify-delivery` check setup and delivery: [troubleshooting.md](troubleshooting.md).
-- Staging to Production, rollouts and rollbacks: [Releasing updates](https://patch.codemagic.io/docs/using-patch/releasing-updates.md), [Production control](https://patch.codemagic.io/docs/using-patch/production-control.md). Each needs the user's go-ahead.
+- Staging to Production, rollouts and rollbacks: [Releasing updates](https://patch.codemagic.io/docs/using-patch/releasing-updates.md), [Production control](https://patch.codemagic.io/docs/using-patch/production-control.md). Each production change needs the user’s go-ahead. Before rolling back, run `cmpatch release rollback --deployment-id <id> --dry-run --format json`. The default target is the previous published release for the same explicit binary version. Show the target label and binary version to the user. With approval, execute with `--expected-target-release-id <target.id> --yes` and the same deployment and label selection.
