@@ -58,4 +58,4 @@ Repeat with the Android app and the installed Android version.
 
 - `cmpatch-capacitor release metrics --app <app> --deployment Staging --label <label>` shows adoption per release.
 - `cmpatch-capacitor doctor` and `--verify-delivery`: see [troubleshooting.md](troubleshooting.md).
-- Promotion, rollout, rollback: [Releasing updates](https://patch.codemagic.io/docs/using-patch/releasing-updates.md), [Production control](https://patch.codemagic.io/docs/using-patch/production-control.md). Each needs the user's go-ahead.
+- Promotion, rollout, rollback: [Releasing updates](https://patch.codemagic.io/docs/using-patch/releasing-updates.md), [Production control](https://patch.codemagic.io/docs/using-patch/production-control.md). Each production change needs the user’s go-ahead. Before rolling back, run `cmpatch-capacitor release rollback --deployment-id <id> --dry-run --format json`. The default target is the previous published release for the same explicit binary version. Show the target label and binary version to the user. With approval, execute with `--expected-target-release-id <target.id> --yes` and the same deployment and label selection.
